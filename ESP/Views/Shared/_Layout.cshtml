@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ESP</title>
+    <!-- Bootstrap 3 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap.min.css" />
+    <style>
+        body { padding-top: 0; }
+        .navbar-brand { font-weight: bold; }
+        .sidebar { min-height: calc(100vh - 50px); background: #2c3e50; padding-top: 10px; }
+        .sidebar ul { padding: 0; list-style: none; }
+        .sidebar ul li a { display: block; padding: 10px 15px; color: #bdc3c7; text-decoration: none; font-size: 13px; }
+        .sidebar ul li a:hover, .sidebar ul li.active a { background: #34495e; color: #fff; }
+        .sidebar ul li a .glyphicon { margin-right: 8px; }
+        .sidebar .nav-header { padding: 8px 15px; color: #7f8c8d; font-size: 11px; text-transform: uppercase; }
+        .main-content { padding: 20px; }
+        .page-header { margin-top: 0; }
+        .table-actions a, .table-actions button { margin: 0 2px; }
+        .modal-header { background: #2c3e50; color: #fff; }
+        .modal-header .close { color: #fff; opacity: 1; }
+        .top-bar { background: #2c3e50; color: #fff; padding: 8px 15px; font-size: 13px; }
+        .top-bar .pull-right a { color: #bdc3c7; }
+    </style>
+</head>
+<body>
+    <!-- Top bar -->
+    <div class="top-bar">
+        <span><strong>Ecole Nationale d'Ingénieurs de Monastir - ESP</strong></span>
+        <span class="pull-right">
+            <span class="glyphicon glyphicon-user"></span> Administrateur
+        </span>
+    </div>
+
+    <div class="container-fluid" style="padding:0">
+        <div class="row" style="margin:0">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar">
+                <ul>
+                    <li class="nav-header">Planification</li>
+                    <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Session" ? "active" : "")">
+                        <a href="/Session"><span class="glyphicon glyphicon-calendar"></span> Sessions</a>
+                    </li>
+                    <li class="nav-header">Paramètres</li>
+                    <li>
+                        <a href="#"><span class="glyphicon glyphicon-cog"></span> Configuration</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Main content -->
+            <div class="col-md-10 main-content">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery 3 -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Bootstrap 3 JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

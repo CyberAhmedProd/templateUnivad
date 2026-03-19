@@ -1,0 +1,452 @@
+@model ESP.Models.Session
+@{
+    ViewData["Title"] = "Détails de session";
+}
+
+<ol class="breadcrumb">
+    <li><a href="/Session">Planification des examens</a></li>
+    <li class="active">Détails de session : @Model.Annee - @Model.Designation</li>
+</ol>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-1 text-center">
+                <span class="glyphicon glyphicon-calendar" style="font-size:60px;color:#2c3e50"></span>
+            </div>
+            <div class="col-md-10">
+                <div class="row">
+                    <div class="col-md-4"><strong>Désignation :</strong> @Model.Designation</div>
+                    <div class="col-md-4"><strong>Année :</strong> @Model.Annee</div>
+                    <div class="col-md-4 text-right">
+                        <button class="btn btn-warning btn-sm" onclick="editSession()">
+                            <span class="glyphicon glyphicon-pencil"></span> Modifier
+                        </button>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:8px">
+                    <div class="col-md-4"><strong>Date de début :</strong> @Model.DateDebut.ToString("dd/MM/yyyy")</div>
+                    <div class="col-md-4"><strong>Date de fin :</strong> @Model.DateFin.ToString("dd/MM/yyyy")</div>
+                </div>
+                <div class="row" style="margin-top:8px">
+                    <div class="col-md-4"><strong>Type de Session :</strong> @Model.Type</div>
+                    <div class="col-md-4"><strong>Période :</strong> @Model.Periode</div>
+                </div>
+                <div class="row" style="margin-top:8px">
+                    <div class="col-md-4"><strong>Unité :</strong> @Model.Unite</div>
+                    <div class="col-md-4"><strong>Utiliser les Groupes :</strong> @(Model.UseGroupe == 1 ? "Oui" : "Non")</div>
+                </div>
+                <div class="row" style="margin-top:8px">
+                    <div class="col-md-4"><strong>État :</strong>
+                        <span class="label @(Model.Etat == "En Cours" ? "label-success" : "label-default")">@Model.Etat</span>
+                    </div>
+                    <div class="col-md-8"><strong>Observations :</strong> @Model.Observations</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Onglets -->
+<ul class="nav nav-tabs" id="sessionTabs">
+    <li class="active"><a href="#tab-seances" data-toggle="tab">Séances</a></li>
+    <li><a href="#tab-filieres" data-toggle="tab">Filières</a></li>
+    <li><a href="#tab-niveaux" data-toggle="tab">Niveaux</a></li>
+</ul>
+
+<div class="tab-content" style="border:1px solid #ddd;border-top:none;padding:15px">
+
+    <!-- Séances -->
+    <div class="tab-pane active" id="tab-seances">
+        <div class="clearfix" style="margin-bottom:10px">
+            <div class="pull-left">
+                <span class="glyphicon glyphicon-info-sign text-info"></span>
+                <span id="nbSeances">0</span> séance(s)
+            </div>
+            <div class="pull-right">
+                <button class="btn btn-default btn-sm"><span class="glyphicon glyphicon-import"></span> Importer par session</button>
+                <button class="btn btn-success btn-sm" onclick="openSeanceModal(0)">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
+            </div>
+        </div>
+        <table id="tblSeances" class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Désignation</th>
+                    <th>Désignation abrégée</th>
+                    <th>Heure de début</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="bodySeances"></tbody>
+        </table>
+    </div>
+
+    <!-- Filières -->
+    <div class="tab-pane" id="tab-filieres">
+        <div class="clearfix" style="margin-bottom:10px">
+            <div class="pull-right">
+                <button class="btn btn-success btn-sm" onclick="openFiliereModal(0)">
+                    <span class="glyphicon glyphicon-plus"></span> Ajouter
+                </button>
+            </div>
+        </div>
+        <table id="tblFilieres" class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Intitulé (Fr)</th>
+                    <th>Intitulé (Ar)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="bodyFilieres"></tbody>
+        </table>
+    </div>
+
+    <!-- Niveaux -->
+    <div class="tab-pane" id="tab-niveaux">
+        <div class="clearfix" style="margin-bottom:10px">
+            <div class="pull-right">
+                <button class="btn btn-success btn-sm" onclick="openNiveauModal(0)">
+                    <span class="glyphicon glyphicon-plus"></span> Ajouter
+                </button>
+            </div>
+        </div>
+        <table id="tblNiveaux" class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Intitulé (Fr)</th>
+                    <th>Abrégé</th>
+                    <th>Filière</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="bodyNiveaux"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Séance -->
+<div class="modal fade" id="modalSeance" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="seanceModalTitle">Séance</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="seanceId" />
+                <div class="form-group">
+                    <label>Désignation *</label>
+                    <input type="text" class="form-control" id="seanceDesignation" />
+                </div>
+                <div class="form-group">
+                    <label>Désignation abrégée</label>
+                    <input type="text" class="form-control" id="seanceDesignationAbregee" />
+                </div>
+                <div class="form-group">
+                    <label>Heure de début *</label>
+                    <input type="time" class="form-control" id="seanceHeureDebut" />
+                </div>
+                <div id="seanceError" class="alert alert-danger" style="display:none"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Annuler</button>
+                <button class="btn btn-primary" onclick="saveSeance()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Filière -->
+<div class="modal fade" id="modalFiliere" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="filiereModalTitle">Filière</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="filiereId" />
+                <div class="form-group">
+                    <label>Code *</label>
+                    <input type="text" class="form-control" id="filiereCode" />
+                </div>
+                <div class="form-group">
+                    <label>Intitulé (Fr) *</label>
+                    <input type="text" class="form-control" id="filiereIntituleFr" />
+                </div>
+                <div class="form-group">
+                    <label>Intitulé (Ar)</label>
+                    <input type="text" class="form-control" id="filiereIntituleAr" dir="rtl" />
+                </div>
+                <div id="filiereError" class="alert alert-danger" style="display:none"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Annuler</button>
+                <button class="btn btn-primary" onclick="saveFiliere()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Niveau -->
+<div class="modal fade" id="modalNiveau" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="niveauModalTitle">Niveau</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="niveauId" />
+                <div class="form-group">
+                    <label>Filière *</label>
+                    <select class="form-control" id="niveauIdFiliere"></select>
+                </div>
+                <div class="form-group">
+                    <label>Code *</label>
+                    <input type="text" class="form-control" id="niveauCode" />
+                </div>
+                <div class="form-group">
+                    <label>Intitulé (Fr) *</label>
+                    <input type="text" class="form-control" id="niveauIntituleFr" />
+                </div>
+                <div class="form-group">
+                    <label>Abrégé *</label>
+                    <input type="text" class="form-control" id="niveauIntituleAbrg" />
+                </div>
+                <div class="form-group">
+                    <label>Intitulé (Ar)</label>
+                    <input type="text" class="form-control" id="niveauIntituleAr" dir="rtl" />
+                </div>
+                <div id="niveauError" class="alert alert-danger" style="display:none"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Annuler</button>
+                <button class="btn btn-primary" onclick="saveNiveau()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Suppression -->
+<div class="modal fade" id="modalDel" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Confirmer</h4>
+            </div>
+            <div class="modal-body"><p id="delMsg"></p></div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Annuler</button>
+                <button class="btn btn-danger" id="btnDel">Supprimer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    var sessionId = @Model.Id;
+    var dtSeances, dtFilieres, dtNiveaux;
+    var filieresList = [];
+
+    $(function () {
+        dtSeances = $('#tblSeances').DataTable({ language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' }, paging: false, searching: false, info: false });
+        dtFilieres = $('#tblFilieres').DataTable({ language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' }, paging: false, searching: false, info: false });
+        dtNiveaux = $('#tblNiveaux').DataTable({ language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' }, paging: false, searching: false, info: false });
+
+        loadSeances();
+        loadFilieres();
+        loadNiveaux();
+    });
+
+    // ===== SÉANCES =====
+    function loadSeances() {
+        $.get('/SessionSeance/GetBySession?idSession=' + sessionId, function (data) {
+            dtSeances.clear();
+            $('#nbSeances').text(data.length);
+            data.forEach(function (s) {
+                dtSeances.row.add([
+                    s.designation,
+                    s.designationAbregee || '',
+                    s.heureDebut,
+                    '<span class="table-actions">' +
+                    '<button class="btn btn-xs btn-warning" onclick="openSeanceModal(' + s.id + ')"><span class="glyphicon glyphicon-pencil"></span></button> ' +
+                    '<button class="btn btn-xs btn-danger" onclick="delItem(\'seance\',' + s.id + ',\'' + s.designation + '\')"><span class="glyphicon glyphicon-trash"></span></button>' +
+                    '</span>'
+                ]);
+            });
+            dtSeances.draw();
+        });
+    }
+
+    function openSeanceModal(id) {
+        $('#seanceError').hide();
+        if (id === 0) {
+            $('#seanceModalTitle').text('Nouvelle séance');
+            $('#seanceId').val(0);
+            $('#seanceDesignation').val('');
+            $('#seanceDesignationAbregee').val('');
+            $('#seanceHeureDebut').val('');
+        } else {
+            $.get('/SessionSeance/GetById/' + id, function (s) {
+                $('#seanceModalTitle').text('Modifier la séance');
+                $('#seanceId').val(s.id);
+                $('#seanceDesignation').val(s.designation);
+                $('#seanceDesignationAbregee').val(s.designationAbregee);
+                $('#seanceHeureDebut').val(s.heureDebut);
+            });
+        }
+        $('#modalSeance').modal('show');
+    }
+
+    function saveSeance() {
+        var data = {
+            id: parseInt($('#seanceId').val()),
+            idSession: sessionId,
+            designation: $('#seanceDesignation').val(),
+            designationAbregee: $('#seanceDesignationAbregee').val(),
+            heureDebut: $('#seanceHeureDebut').val()
+        };
+        $.ajax({ url: '/SessionSeance/Save', type: 'POST', contentType: 'application/json', data: JSON.stringify(data),
+            success: function () { $('#modalSeance').modal('hide'); loadSeances(); },
+            error: function (xhr) { $('#seanceError').text(xhr.responseJSON ? xhr.responseJSON.error : 'Erreur').show(); }
+        });
+    }
+
+    // ===== FILIÈRES =====
+    function loadFilieres() {
+        $.get('/SessionFiliere/GetBySession?idSession=' + sessionId, function (data) {
+            filieresList = data;
+            dtFilieres.clear();
+            data.forEach(function (f) {
+                dtFilieres.row.add([
+                    f.code, f.intituleFr, f.intituleAr || '',
+                    '<span class="table-actions">' +
+                    '<button class="btn btn-xs btn-warning" onclick="openFiliereModal(' + f.id + ')"><span class="glyphicon glyphicon-pencil"></span></button> ' +
+                    '<button class="btn btn-xs btn-danger" onclick="delItem(\'filiere\',' + f.id + ',\'' + f.code + '\')"><span class="glyphicon glyphicon-trash"></span></button>' +
+                    '</span>'
+                ]);
+            });
+            dtFilieres.draw();
+        });
+    }
+
+    function openFiliereModal(id) {
+        $('#filiereError').hide();
+        if (id === 0) {
+            $('#filiereModalTitle').text('Nouvelle filière');
+            $('#filiereId').val(0);
+            $('#filiereCode,#filiereIntituleFr,#filiereIntituleAr').val('');
+        } else {
+            $.get('/SessionFiliere/GetById/' + id, function (f) {
+                $('#filiereModalTitle').text('Modifier la filière');
+                $('#filiereId').val(f.id);
+                $('#filiereCode').val(f.code);
+                $('#filiereIntituleFr').val(f.intituleFr);
+                $('#filiereIntituleAr').val(f.intituleAr);
+            });
+        }
+        $('#modalFiliere').modal('show');
+    }
+
+    function saveFiliere() {
+        var data = {
+            id: parseInt($('#filiereId').val()),
+            idSession: sessionId,
+            code: $('#filiereCode').val(),
+            intituleFr: $('#filiereIntituleFr').val(),
+            intituleAr: $('#filiereIntituleAr').val()
+        };
+        $.ajax({ url: '/SessionFiliere/Save', type: 'POST', contentType: 'application/json', data: JSON.stringify(data),
+            success: function () { $('#modalFiliere').modal('hide'); loadFilieres(); loadNiveaux(); },
+            error: function (xhr) { $('#filiereError').text(xhr.responseJSON ? xhr.responseJSON.error : 'Erreur').show(); }
+        });
+    }
+
+    // ===== NIVEAUX =====
+    function loadNiveaux() {
+        $.get('/SessionNiveau/GetBySession?idSession=' + sessionId, function (data) {
+            dtNiveaux.clear();
+            data.forEach(function (n) {
+                var filiere = filieresList.find(f => f.id === n.idSessionFiliere);
+                dtNiveaux.row.add([
+                    n.code, n.intituleFr, n.intituleAbrg,
+                    filiere ? filiere.code : n.idSessionFiliere,
+                    '<span class="table-actions">' +
+                    '<button class="btn btn-xs btn-warning" onclick="openNiveauModal(' + n.id + ')"><span class="glyphicon glyphicon-pencil"></span></button> ' +
+                    '<button class="btn btn-xs btn-danger" onclick="delItem(\'niveau\',' + n.id + ',\'' + n.code + '\')"><span class="glyphicon glyphicon-trash"></span></button>' +
+                    '</span>'
+                ]);
+            });
+            dtNiveaux.draw();
+        });
+    }
+
+    function openNiveauModal(id) {
+        $('#niveauError').hide();
+        // Populate filières dropdown
+        var sel = $('#niveauIdFiliere').empty();
+        filieresList.forEach(function (f) {
+            sel.append('<option value="' + f.id + '">' + f.code + ' - ' + f.intituleFr + '</option>');
+        });
+
+        if (id === 0) {
+            $('#niveauModalTitle').text('Nouveau niveau');
+            $('#niveauId').val(0);
+            $('#niveauCode,#niveauIntituleFr,#niveauIntituleAbrg,#niveauIntituleAr').val('');
+        } else {
+            $.get('/SessionNiveau/GetById/' + id, function (n) {
+                $('#niveauModalTitle').text('Modifier le niveau');
+                $('#niveauId').val(n.id);
+                $('#niveauIdFiliere').val(n.idSessionFiliere);
+                $('#niveauCode').val(n.code);
+                $('#niveauIntituleFr').val(n.intituleFr);
+                $('#niveauIntituleAbrg').val(n.intituleAbrg);
+                $('#niveauIntituleAr').val(n.intituleAr);
+            });
+        }
+        $('#modalNiveau').modal('show');
+    }
+
+    function saveNiveau() {
+        var data = {
+            id: parseInt($('#niveauId').val()),
+            idSession: sessionId,
+            idSessionFiliere: parseInt($('#niveauIdFiliere').val()),
+            code: $('#niveauCode').val(),
+            intituleFr: $('#niveauIntituleFr').val(),
+            intituleAbrg: $('#niveauIntituleAbrg').val(),
+            intituleAr: $('#niveauIntituleAr').val()
+        };
+        $.ajax({ url: '/SessionNiveau/Save', type: 'POST', contentType: 'application/json', data: JSON.stringify(data),
+            success: function () { $('#modalNiveau').modal('hide'); loadNiveaux(); },
+            error: function (xhr) { $('#niveauError').text(xhr.responseJSON ? xhr.responseJSON.error : 'Erreur').show(); }
+        });
+    }
+
+    // ===== SUPPRESSION GÉNÉRIQUE =====
+    function delItem(type, id, label) {
+        var urls = { seance: '/SessionSeance/Delete', filiere: '/SessionFiliere/Delete', niveau: '/SessionNiveau/Delete' };
+        var reloads = { seance: loadSeances, filiere: function(){ loadFilieres(); loadNiveaux(); }, niveau: loadNiveaux };
+        $('#delMsg').text('Supprimer "' + label + '" ?');
+        $('#btnDel').off('click').on('click', function () {
+            $.post(urls[type] + '?id=' + id, function () {
+                $('#modalDel').modal('hide');
+                reloads[type]();
+            });
+        });
+        $('#modalDel').modal('show');
+    }
+
+    function editSession() {
+        window.location.href = '/Session?edit=' + sessionId;
+    }
+</script>
+}
