@@ -52,6 +52,11 @@
     <li class="active"><a href="#tab-seances" data-toggle="tab">Séances</a></li>
     <li><a href="#tab-filieres" data-toggle="tab">Filières</a></li>
     <li><a href="#tab-niveaux" data-toggle="tab">Niveaux</a></li>
+    <li><a href="#tab-journees" data-toggle="tab">Journées</a></li>
+    <li><a href="#tab-centres" data-toggle="tab">Centres</a></li>
+    <li><a href="#tab-niveaucentre" data-toggle="tab">Niveaux-Centres</a></li>
+    <li><a href="#tab-epreuves" data-toggle="tab">Épreuves</a></li>
+    <li><a href="#tab-credits" data-toggle="tab">Crédits</a></li>
 </ul>
 
 <div class="tab-content" style="border:1px solid #ddd;border-top:none;padding:15px">
@@ -127,6 +132,89 @@
             <tbody id="bodyNiveaux"></tbody>
         </table>
     </div>
+
+    <!-- Journées -->
+    <div class="tab-pane" id="tab-journees">
+        <div class="clearfix" style="margin-bottom:10px">
+            <div class="pull-right">
+                <button class="btn btn-success btn-sm" onclick="openJourModal(0)">
+                    <span class="glyphicon glyphicon-plus"></span> Ajouter
+                </button>
+            </div>
+        </div>
+        <table id="tblJournees" class="table table-striped table-bordered table-hover">
+            <thead><tr><th>Date</th><th>Jour de la semaine</th><th>Actions</th></tr></thead>
+            <tbody id="bodyJournees"></tbody>
+        </table>
+    </div>
+
+    <!-- Centres -->
+    <div class="tab-pane" id="tab-centres">
+        <div class="clearfix" style="margin-bottom:10px">
+            <div class="pull-right">
+                <button class="btn btn-success btn-sm" onclick="openCentreModal(0)">
+                    <span class="glyphicon glyphicon-plus"></span> Ajouter
+                </button>
+            </div>
+        </div>
+        <table id="tblCentres" class="table table-striped table-bordered table-hover">
+            <thead><tr><th>Intitulé</th><th>Abrégé</th><th>Responsable</th><th>Localisation</th><th>Actions</th></tr></thead>
+            <tbody id="bodyCentres"></tbody>
+        </table>
+    </div>
+
+    <!-- Niveaux-Centres -->
+    <div class="tab-pane" id="tab-niveaucentre">
+        <div class="clearfix" style="margin-bottom:10px">
+            <div class="pull-right">
+                <button class="btn btn-success btn-sm" onclick="openNiveauCentreModal()">
+                    <span class="glyphicon glyphicon-plus"></span> Ajouter
+                </button>
+            </div>
+        </div>
+        <table id="tblNiveauCentre" class="table table-striped table-bordered table-hover">
+            <thead><tr><th>Niveau</th><th>Centre</th><th>Actions</th></tr></thead>
+            <tbody id="bodyNiveauCentre"></tbody>
+        </table>
+    </div>
+
+    <!-- Épreuves -->
+    <div class="tab-pane" id="tab-epreuves">
+        <div class="clearfix" style="margin-bottom:10px">
+            <div class="pull-right">
+                <button class="btn btn-success btn-sm" onclick="openEpreuveModal(0)">
+                    <span class="glyphicon glyphicon-plus"></span> Ajouter
+                </button>
+            </div>
+        </div>
+        <table id="tblEpreuves" class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Code</th><th>Intitulé</th><th>Nature</th><th>Type</th>
+                    <th>Durée</th><th>Niveau</th><th>Séance</th><th>Nb Candidats</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="bodyEpreuves"></tbody>
+        </table>
+    </div>
+
+    <!-- Crédits -->
+    <div class="tab-pane" id="tab-credits">
+        <div class="clearfix" style="margin-bottom:10px">
+            <div class="pull-right">
+                <button class="btn btn-success btn-sm" onclick="openCreditsModal(0)">
+                    <span class="glyphicon glyphicon-plus"></span> Ajouter
+                </button>
+            </div>
+        </div>
+        <table id="tblCredits" class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr><th>Épreuve</th><th>Niveau</th><th>Nb Candidats</th><th>Observation</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="bodyCredits"></tbody>
+        </table>
+    </div>
+
 </div>
 
 <!-- Modal Séance -->
@@ -250,32 +338,245 @@
     </div>
 </div>
 
+<!-- Modal Jour -->
+<div class="modal fade" id="modalJour" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="jourModalTitle">Journée</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="jourId" />
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" class="form-control" id="jourDate" />
+                </div>
+                <div id="jourError" class="alert alert-danger" style="display:none"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Annuler</button>
+                <button class="btn btn-primary" onclick="saveJour()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Centre -->
+<div class="modal fade" id="modalCentre" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="centreModalTitle">Centre</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="centreId" />
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label>Intitulé *</label>
+                            <input type="text" class="form-control" id="centreIntitule" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Abrégé</label>
+                            <input type="text" class="form-control" id="centreIntituleAbrg" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Responsable</label>
+                    <input type="text" class="form-control" id="centreResponsable" />
+                </div>
+                <div class="form-group">
+                    <label>Localisation</label>
+                    <input type="text" class="form-control" id="centreLocalisation" />
+                </div>
+                <div id="centreError" class="alert alert-danger" style="display:none"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Annuler</button>
+                <button class="btn btn-primary" onclick="saveCentre()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Niveau-Centre -->
+<div class="modal fade" id="modalNiveauCentre" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Affecter Niveau → Centre</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Niveau *</label>
+                    <select class="form-control" id="ncNiveau"></select>
+                </div>
+                <div class="form-group">
+                    <label>Centre *</label>
+                    <select class="form-control" id="ncCentre"></select>
+                </div>
+                <div id="ncError" class="alert alert-danger" style="display:none"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Annuler</button>
+                <button class="btn btn-primary" onclick="saveNiveauCentre()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Épreuve -->
+<div class="modal fade" id="modalEpreuve" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="epreuveModalTitle">Épreuve</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="epreuveId" />
+                <input type="hidden" id="epreuveHeureDebut" />
+                <input type="hidden" id="epreuveHeureFin" />
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group"><label>Code</label><input type="text" class="form-control" id="epreuveCode" /></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group"><label>Intitulé *</label><input type="text" class="form-control" id="epreuveIntitule" /></div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group"><label>Abrégé</label><input type="text" class="form-control" id="epreuveIntituleAbrg" /></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group"><label>Nature</label>
+                            <select class="form-control" id="epreuveNature">
+                                <option value="">--</option>
+                                <option>Écrit</option><option>Oral</option><option>TP</option><option>Projet</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group"><label>Type</label>
+                            <select class="form-control" id="epreuveType">
+                                <option value="">--</option>
+                                <option>Principal</option><option>Rattrapage</option><option>Commun</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Durée (HH:MM) *</label>
+                            <input type="text" class="form-control" id="epreuveDuree" placeholder="01:30" pattern="^\d{2}:\d{2}$" />
+                            <span class="help-block" style="font-size:11px">ex: 01:30 pour 1h30</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group"><label>Niveau *</label>
+                            <select class="form-control" id="epreuveIdNiveau"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group"><label>Nb Candidats</label>
+                            <input type="number" class="form-control" id="epreuveNbCandidat" min="0" value="0" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group"><label>Nb Enveloppes</label>
+                            <input type="number" class="form-control" id="epreuveNbEnveloppes" min="0" value="0" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group"><label>État dépôt sujet</label>
+                            <select class="form-control" id="epreuveEtatDepot">
+                                <option value="">--</option>
+                                <option>Non déposé</option><option>Déposé</option><option>Distribué</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="epreuveError" class="alert alert-danger" style="display:none"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Annuler</button>
+                <button class="btn btn-primary" onclick="saveEpreuve()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Crédits -->
+<div class="modal fade" id="modalCredits" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="creditsModalTitle">Crédits</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="creditsId" />
+                <div class="form-group"><label>Épreuve *</label>
+                    <select class="form-control" id="creditsIdEpreuve"></select>
+                </div>
+                <div class="form-group"><label>Niveau *</label>
+                    <select class="form-control" id="creditsIdNiveau"></select>
+                </div>
+                <div class="form-group"><label>Nb Candidats *</label>
+                    <input type="number" class="form-control" id="creditsNbCandidat" min="0" value="0" />
+                </div>
+                <div class="form-group"><label>Observation</label>
+                    <input type="text" class="form-control" id="creditsObservation" />
+                </div>
+                <div id="creditsError" class="alert alert-danger" style="display:none"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Annuler</button>
+                <button class="btn btn-primary" onclick="saveCredits()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
 <script>
     var sessionId = @Model.Id;
-    var dtSeances, dtFilieres, dtNiveaux;
-    var filieresList = [];
+    var dtSeances, dtFilieres, dtNiveaux, dtJournees, dtCentres, dtNiveauCentre, dtEpreuves, dtCredits;
+    var filieresList = [], niveauxList = [], centresList = [], seancesList = [], joursList = [], epreuvesList = [];
 
     $(function () {
-        dtSeances = $('#tblSeances').DataTable({ language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' }, paging: false, searching: false, info: false });
-        dtFilieres = $('#tblFilieres').DataTable({ language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' }, paging: false, searching: false, info: false });
-        dtNiveaux = $('#tblNiveaux').DataTable({ language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' }, paging: false, searching: false, info: false });
+        var dtOpts = { language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json' }, paging: false, searching: false, info: false };
+        dtSeances      = $('#tblSeances').DataTable(dtOpts);
+        dtFilieres     = $('#tblFilieres').DataTable(dtOpts);
+        dtNiveaux      = $('#tblNiveaux').DataTable(dtOpts);
+        dtJournees     = $('#tblJournees').DataTable(dtOpts);
+        dtCentres      = $('#tblCentres').DataTable(dtOpts);
+        dtNiveauCentre = $('#tblNiveauCentre').DataTable(dtOpts);
+        dtEpreuves     = $('#tblEpreuves').DataTable(dtOpts);
+        dtCredits      = $('#tblCredits').DataTable(dtOpts);
 
-        loadSeances();
-        loadFilieres();
-        loadNiveaux();
+        loadSeances(); loadFilieres(); loadNiveaux();
+        loadJournees(); loadCentres(); loadNiveauCentre();
+        loadEpreuves(); loadCredits();
     });
 
     // ===== SÉANCES =====
     function loadSeances() {
         $.get('/SessionSeance/GetBySession?idSession=' + sessionId, function (data) {
+            seancesList = data;
             dtSeances.clear();
             $('#nbSeances').text(data.length);
             data.forEach(function (s) {
                 dtSeances.row.add([
-                    s.designation,
-                    s.designationAbregee || '',
-                    s.heureDebut,
+                    s.designation, s.designationAbregee || '', s.heureDebut,
                     '<span class="table-actions">' +
                     '<button class="btn btn-xs btn-warning" onclick="openSeanceModal(' + s.id + ')"><span class="glyphicon glyphicon-pencil"></span></button> ' +
                     '<button class="btn btn-xs btn-danger" onclick="delItem(\'seance\',' + s.id + ',\'' + s.designation + '\')"><span class="glyphicon glyphicon-trash"></span></button>' +
@@ -291,9 +592,7 @@
         if (id === 0) {
             $('#seanceModalTitle').text('Nouvelle séance');
             $('#seanceId').val(0);
-            $('#seanceDesignation').val('');
-            $('#seanceDesignationAbregee').val('');
-            $('#seanceHeureDebut').val('');
+            $('#seanceDesignation,#seanceDesignationAbregee,#seanceHeureDebut').val('');
         } else {
             $.get('/SessionSeance/GetById/' + id, function (s) {
                 $('#seanceModalTitle').text('Modifier la séance');
@@ -307,13 +606,9 @@
     }
 
     function saveSeance() {
-        var data = {
-            id: parseInt($('#seanceId').val()),
-            idSession: sessionId,
-            designation: $('#seanceDesignation').val(),
-            designationAbregee: $('#seanceDesignationAbregee').val(),
-            heureDebut: $('#seanceHeureDebut').val()
-        };
+        var data = { id: parseInt($('#seanceId').val()), idSession: sessionId,
+            designation: $('#seanceDesignation').val(), designationAbregee: $('#seanceDesignationAbregee').val(),
+            heureDebut: $('#seanceHeureDebut').val() };
         $.ajax({ url: '/SessionSeance/Save', type: 'POST', contentType: 'application/json', data: JSON.stringify(data),
             success: function () { $('#modalSeance').modal('hide'); loadSeances(); },
             error: function (xhr) { $('#seanceError').text(xhr.responseJSON ? xhr.responseJSON.error : 'Erreur').show(); }
@@ -340,30 +635,13 @@
 
     function openFiliereModal(id) {
         $('#filiereError').hide();
-        if (id === 0) {
-            $('#filiereModalTitle').text('Nouvelle filière');
-            $('#filiereId').val(0);
-            $('#filiereCode,#filiereIntituleFr,#filiereIntituleAr').val('');
-        } else {
-            $.get('/SessionFiliere/GetById/' + id, function (f) {
-                $('#filiereModalTitle').text('Modifier la filière');
-                $('#filiereId').val(f.id);
-                $('#filiereCode').val(f.code);
-                $('#filiereIntituleFr').val(f.intituleFr);
-                $('#filiereIntituleAr').val(f.intituleAr);
-            });
-        }
+        if (id === 0) { $('#filiereModalTitle').text('Nouvelle filière'); $('#filiereId').val(0); $('#filiereCode,#filiereIntituleFr,#filiereIntituleAr').val(''); }
+        else { $.get('/SessionFiliere/GetById/' + id, function (f) { $('#filiereModalTitle').text('Modifier'); $('#filiereId').val(f.id); $('#filiereCode').val(f.code); $('#filiereIntituleFr').val(f.intituleFr); $('#filiereIntituleAr').val(f.intituleAr); }); }
         $('#modalFiliere').modal('show');
     }
 
     function saveFiliere() {
-        var data = {
-            id: parseInt($('#filiereId').val()),
-            idSession: sessionId,
-            code: $('#filiereCode').val(),
-            intituleFr: $('#filiereIntituleFr').val(),
-            intituleAr: $('#filiereIntituleAr').val()
-        };
+        var data = { id: parseInt($('#filiereId').val()), idSession: sessionId, code: $('#filiereCode').val(), intituleFr: $('#filiereIntituleFr').val(), intituleAr: $('#filiereIntituleAr').val() };
         $.ajax({ url: '/SessionFiliere/Save', type: 'POST', contentType: 'application/json', data: JSON.stringify(data),
             success: function () { $('#modalFiliere').modal('hide'); loadFilieres(); loadNiveaux(); },
             error: function (xhr) { $('#filiereError').text(xhr.responseJSON ? xhr.responseJSON.error : 'Erreur').show(); }
@@ -373,6 +651,7 @@
     // ===== NIVEAUX =====
     function loadNiveaux() {
         $.get('/SessionNiveau/GetBySession?idSession=' + sessionId, function (data) {
+            niveauxList = data;
             dtNiveaux.clear();
             data.forEach(function (n) {
                 var filiere = filieresList.find(f => f.id === n.idSessionFiliere);
@@ -391,62 +670,298 @@
 
     function openNiveauModal(id) {
         $('#niveauError').hide();
-        // Populate filières dropdown
         var sel = $('#niveauIdFiliere').empty();
-        filieresList.forEach(function (f) {
-            sel.append('<option value="' + f.id + '">' + f.code + ' - ' + f.intituleFr + '</option>');
-        });
-
-        if (id === 0) {
-            $('#niveauModalTitle').text('Nouveau niveau');
-            $('#niveauId').val(0);
-            $('#niveauCode,#niveauIntituleFr,#niveauIntituleAbrg,#niveauIntituleAr').val('');
-        } else {
-            $.get('/SessionNiveau/GetById/' + id, function (n) {
-                $('#niveauModalTitle').text('Modifier le niveau');
-                $('#niveauId').val(n.id);
-                $('#niveauIdFiliere').val(n.idSessionFiliere);
-                $('#niveauCode').val(n.code);
-                $('#niveauIntituleFr').val(n.intituleFr);
-                $('#niveauIntituleAbrg').val(n.intituleAbrg);
-                $('#niveauIntituleAr').val(n.intituleAr);
-            });
-        }
+        filieresList.forEach(function (f) { sel.append('<option value="' + f.id + '">' + f.code + ' - ' + f.intituleFr + '</option>'); });
+        if (id === 0) { $('#niveauModalTitle').text('Nouveau niveau'); $('#niveauId').val(0); $('#niveauCode,#niveauIntituleFr,#niveauIntituleAbrg,#niveauIntituleAr').val(''); }
+        else { $.get('/SessionNiveau/GetById/' + id, function (n) { $('#niveauModalTitle').text('Modifier'); $('#niveauId').val(n.id); $('#niveauIdFiliere').val(n.idSessionFiliere); $('#niveauCode').val(n.code); $('#niveauIntituleFr').val(n.intituleFr); $('#niveauIntituleAbrg').val(n.intituleAbrg); $('#niveauIntituleAr').val(n.intituleAr); }); }
         $('#modalNiveau').modal('show');
     }
 
     function saveNiveau() {
-        var data = {
-            id: parseInt($('#niveauId').val()),
-            idSession: sessionId,
-            idSessionFiliere: parseInt($('#niveauIdFiliere').val()),
-            code: $('#niveauCode').val(),
-            intituleFr: $('#niveauIntituleFr').val(),
-            intituleAbrg: $('#niveauIntituleAbrg').val(),
-            intituleAr: $('#niveauIntituleAr').val()
-        };
+        var data = { id: parseInt($('#niveauId').val()), idSession: sessionId, idSessionFiliere: parseInt($('#niveauIdFiliere').val()), code: $('#niveauCode').val(), intituleFr: $('#niveauIntituleFr').val(), intituleAbrg: $('#niveauIntituleAbrg').val(), intituleAr: $('#niveauIntituleAr').val() };
         $.ajax({ url: '/SessionNiveau/Save', type: 'POST', contentType: 'application/json', data: JSON.stringify(data),
             success: function () { $('#modalNiveau').modal('hide'); loadNiveaux(); },
             error: function (xhr) { $('#niveauError').text(xhr.responseJSON ? xhr.responseJSON.error : 'Erreur').show(); }
         });
     }
 
+    // ===== JOURNÉES =====
+    var jours = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+
+    function loadJournees() {
+        $.get('/SessionJour/GetBySession?idSession=' + sessionId, function (data) {
+            joursList = data;
+            dtJournees.clear();
+            data.forEach(function (j) {
+                var d = new Date(j.jour);
+                dtJournees.row.add([
+                    d.toLocaleDateString('fr-FR'),
+                    jours[d.getDay()],
+                    '<span class="table-actions">' +
+                    '<button class="btn btn-xs btn-warning" onclick="openJourModal(' + j.id + ')"><span class="glyphicon glyphicon-pencil"></span></button> ' +
+                    '<button class="btn btn-xs btn-danger" onclick="delItem(\'jour\',' + j.id + ',\'' + d.toLocaleDateString('fr-FR') + '\')"><span class="glyphicon glyphicon-trash"></span></button>' +
+                    '</span>'
+                ]);
+            });
+            dtJournees.draw();
+        });
+    }
+
+    function openJourModal(id) {
+        $('#jourError').hide();
+        if (id === 0) { $('#jourModalTitle').text('Nouvelle journée'); $('#jourId').val(0); $('#jourDate').val(''); }
+        else { $.get('/SessionJour/GetById/' + id, function (j) { $('#jourModalTitle').text('Modifier'); $('#jourId').val(j.id); $('#jourDate').val(j.jour.substring(0,10)); }); }
+        $('#modalJour').modal('show');
+    }
+
+    function saveJour() {
+        var data = { id: parseInt($('#jourId').val()), idSession: sessionId, jour: $('#jourDate').val() };
+        $.ajax({ url: '/SessionJour/Save', type: 'POST', contentType: 'application/json', data: JSON.stringify(data),
+            success: function () { $('#modalJour').modal('hide'); loadJournees(); },
+            error: function (xhr) { $('#jourError').text(xhr.responseJSON ? xhr.responseJSON.error : 'Erreur').show(); }
+        });
+    }
+
+    // ===== CENTRES =====
+    function loadCentres() {
+        $.get('/SessionCentre/GetBySession?idSession=' + sessionId, function (data) {
+            centresList = data;
+            dtCentres.clear();
+            data.forEach(function (c) {
+                dtCentres.row.add([
+                    c.intitule, c.intituleAbrg, c.responsable, c.localisation,
+                    '<span class="table-actions">' +
+                    '<button class="btn btn-xs btn-warning" onclick="openCentreModal(' + c.id + ')"><span class="glyphicon glyphicon-pencil"></span></button> ' +
+                    '<button class="btn btn-xs btn-danger" onclick="delItem(\'centre\',' + c.id + ',\'' + c.intitule + '\')"><span class="glyphicon glyphicon-trash"></span></button>' +
+                    '</span>'
+                ]);
+            });
+            dtCentres.draw();
+        });
+    }
+
+    function openCentreModal(id) {
+        $('#centreError').hide();
+        if (id === 0) { $('#centreModalTitle').text('Nouveau centre'); $('#centreId').val(0); $('#centreIntitule,#centreIntituleAbrg,#centreResponsable,#centreLocalisation').val(''); }
+        else { $.get('/SessionCentre/GetById/' + id, function (c) { $('#centreModalTitle').text('Modifier'); $('#centreId').val(c.id); $('#centreIntitule').val(c.intitule); $('#centreIntituleAbrg').val(c.intituleAbrg); $('#centreResponsable').val(c.responsable); $('#centreLocalisation').val(c.localisation); }); }
+        $('#modalCentre').modal('show');
+    }
+
+    function saveCentre() {
+        var data = { id: parseInt($('#centreId').val()), idSession: sessionId, idCentre: parseInt($('#centreId').val()) || 0, intitule: $('#centreIntitule').val(), intituleAbrg: $('#centreIntituleAbrg').val(), responsable: $('#centreResponsable').val(), localisation: $('#centreLocalisation').val() };
+        $.ajax({ url: '/SessionCentre/Save', type: 'POST', contentType: 'application/json', data: JSON.stringify(data),
+            success: function () { $('#modalCentre').modal('hide'); loadCentres(); loadNiveauCentre(); },
+            error: function (xhr) { $('#centreError').text(xhr.responseJSON ? xhr.responseJSON.error : 'Erreur').show(); }
+        });
+    }
+
+    // ===== NIVEAU-CENTRE =====
+    function loadNiveauCentre() {
+        $.get('/SessionNiveauCentre/GetBySession?idSession=' + sessionId, function (data) {
+            dtNiveauCentre.clear();
+            data.forEach(function (nc) {
+                dtNiveauCentre.row.add([
+                    nc.niveauIntitule, nc.centreIntitule,
+                    '<button class="btn btn-xs btn-danger" onclick="delItem(\'niveaucentre\',' + nc.id + ',\'' + nc.niveauIntitule + '\')"><span class="glyphicon glyphicon-trash"></span></button>'
+                ]);
+            });
+            dtNiveauCentre.draw();
+        });
+    }
+
+    function openNiveauCentreModal() {
+        $('#ncError').hide();
+        var selN = $('#ncNiveau').empty();
+        var selC = $('#ncCentre').empty();
+        niveauxList.forEach(function (n) { selN.append('<option value="' + n.id + '">' + n.code + ' - ' + n.intituleFr + '</option>'); });
+        centresList.forEach(function (c) { selC.append('<option value="' + c.id + '">' + c.intitule + '</option>'); });
+        $('#modalNiveauCentre').modal('show');
+    }
+
+    function saveNiveauCentre() {
+        var data = { idSession: sessionId, idSessionNiveau: parseInt($('#ncNiveau').val()), idSessionCentre: parseInt($('#ncCentre').val()) };
+        $.ajax({ url: '/SessionNiveauCentre/Save', type: 'POST', contentType: 'application/json', data: JSON.stringify(data),
+            success: function () { $('#modalNiveauCentre').modal('hide'); loadNiveauCentre(); },
+            error: function (xhr) { $('#ncError').text(xhr.responseJSON ? xhr.responseJSON.error : 'Erreur').show(); }
+        });
+    }
+
+    // ===== ÉPREUVES =====
+    function loadEpreuves() {
+        $.get('/SessionEpreuve/GetBySession?idSession=' + sessionId, function (data) {
+            epreuvesList = data;
+            dtEpreuves.clear();
+            data.forEach(function (e) {
+                var niveau = niveauxList.find(n => n.id === e.idNiveau);
+                var seance = seancesList.find(s => s.id === e.idSeance);
+                dtEpreuves.row.add([
+                    e.code || '', e.intitule || '', e.nature || '', e.type || '',
+                    e.duree || '',
+                    niveau ? niveau.code : '',
+                    seance ? seance.designation : '',
+                    e.nbCandidat || 0,
+                    '<span class="table-actions">' +
+                    '<button class="btn btn-xs btn-warning" onclick="openEpreuveModal(' + e.id + ')"><span class="glyphicon glyphicon-pencil"></span></button> ' +
+                    '<button class="btn btn-xs btn-danger" onclick="delItem(\'epreuve\',' + e.id + ',\'' + (e.intitule||'').replace(/'/g,"\\'") + '\')"><span class="glyphicon glyphicon-trash"></span></button>' +
+                    '</span>'
+                ]);
+            });
+            dtEpreuves.draw();
+        });
+    }
+
+    function openEpreuveModal(id) {
+        $('#epreuveError').hide();
+        var selN = $('#epreuveIdNiveau').empty();
+        niveauxList.forEach(function (n) { selN.append('<option value="' + n.id + '">' + n.code + ' - ' + n.intituleFr + '</option>'); });
+
+        if (id === 0) {
+            $('#epreuveModalTitle').text('Nouvelle épreuve');
+            $('#epreuveId').val(0);
+            $('#epreuveCode,#epreuveIntitule,#epreuveIntituleAbrg,#epreuveDuree').val('');
+            $('#epreuveHeureDebut,#epreuveHeureFin').val('');
+            $('#epreuveNature,#epreuveType,#epreuveEtatDepot').val('');
+            $('#epreuveNbCandidat,#epreuveNbEnveloppes').val(0);
+        } else {
+            $.get('/SessionEpreuve/GetById/' + id, function (e) {
+                $('#epreuveModalTitle').text('Modifier l\'épreuve');
+                $('#epreuveId').val(e.id);
+                $('#epreuveCode').val(e.code);
+                $('#epreuveIntitule').val(e.intitule);
+                $('#epreuveIntituleAbrg').val(e.intituleAbrg);
+                $('#epreuveNature').val(e.nature);
+                $('#epreuveType').val(e.type);
+                $('#epreuveDuree').val(e.duree || '');
+                $('#epreuveIdNiveau').val(e.idNiveau);
+                $('#epreuveHeureDebut').val(e.heureDebut || '');
+                $('#epreuveHeureFin').val(e.heureFin || '');
+                $('#epreuveNbCandidat').val(e.nbCandidat || 0);
+                $('#epreuveNbEnveloppes').val(e.nbEnveloppes || 0);
+                $('#epreuveEtatDepot').val(e.etatDepotSujet || '');
+            });
+        }
+        $('#modalEpreuve').modal('show');
+    }
+
+    // Additionne deux strings HH:MM → "HH:MM"
+    function addHHMM(t1, t2) {
+        var p1 = t1.split(':'), p2 = t2.split(':');
+        var total = parseInt(p1[0]) * 60 + parseInt(p1[1]) + parseInt(p2[0]) * 60 + parseInt(p2[1]);
+        return String(Math.floor(total / 60)).padStart(2, '0') + ':' + String(total % 60).padStart(2, '0');
+    }
+
+    function saveEpreuve() {
+        var duree = $('#epreuveDuree').val().trim();
+        if (!/^\d{2}:\d{2}$/.test(duree)) {
+            $('#epreuveError').text('La durée doit être au format HH:MM (ex: 01:30)').show();
+            return;
+        }
+        var heureDebut = $('#epreuveHeureDebut').val() || null;
+        var heureFin = (heureDebut && /^\d{2}:\d{2}$/.test(heureDebut)) ? addHHMM(heureDebut, duree) : ($('#epreuveHeureFin').val() || null);
+
+        var data = {
+            id: parseInt($('#epreuveId').val()),
+            idSession: sessionId,
+            idNiveau: parseInt($('#epreuveIdNiveau').val()),
+            code: $('#epreuveCode').val(),
+            intitule: $('#epreuveIntitule').val(),
+            intituleAbrg: $('#epreuveIntituleAbrg').val(),
+            nature: $('#epreuveNature').val() || null,
+            type: $('#epreuveType').val() || null,
+            duree: duree,
+            idSeance: null, idJour: null,
+            heureDebut: heureDebut,
+            heureFin: heureFin,
+            nbCandidat: parseInt($('#epreuveNbCandidat').val()) || 0,
+            nbEnveloppes: parseInt($('#epreuveNbEnveloppes').val()) || 0,
+            etatDepotSujet: $('#epreuveEtatDepot').val() || null,
+            nbEnveloppesADeposer: 0, totalNbEnveloppesDeposees: 0
+        };
+        $.ajax({ url: '/SessionEpreuve/Save', type: 'POST', contentType: 'application/json', data: JSON.stringify(data),
+            success: function () { $('#modalEpreuve').modal('hide'); loadEpreuves(); loadCredits(); },
+            error: function (xhr) { $('#epreuveError').text(xhr.responseJSON ? xhr.responseJSON.error : 'Erreur').show(); }
+        });
+    }
+
+    // ===== CRÉDITS =====
+    function loadCredits() {
+        $.get('/SessionCredits/GetBySession?idSession=' + sessionId, function (data) {
+            dtCredits.clear();
+            data.forEach(function (c) {
+                dtCredits.row.add([
+                    c.epreuveIntitule, c.niveauIntitule, c.nbCandidat, c.observation || '',
+                    '<span class="table-actions">' +
+                    '<button class="btn btn-xs btn-warning" onclick="openCreditsModal(' + c.id + ')"><span class="glyphicon glyphicon-pencil"></span></button> ' +
+                    '<button class="btn btn-xs btn-danger" onclick="delItem(\'credits\',' + c.id + ',\'' + c.epreuveIntitule.replace(/'/g,"\\'") + '\')"><span class="glyphicon glyphicon-trash"></span></button>' +
+                    '</span>'
+                ]);
+            });
+            dtCredits.draw();
+        });
+    }
+
+    function openCreditsModal(id) {
+        $('#creditsError').hide();
+        var selE = $('#creditsIdEpreuve').empty();
+        var selN = $('#creditsIdNiveau').empty();
+        epreuvesList.forEach(function (e) { selE.append('<option value="' + e.id + '">' + (e.intitule || e.code || e.id) + '</option>'); });
+        niveauxList.forEach(function (n) { selN.append('<option value="' + n.id + '">' + n.code + ' - ' + n.intituleFr + '</option>'); });
+
+        if (id === 0) {
+            $('#creditsModalTitle').text('Nouveau crédit');
+            $('#creditsId').val(0);
+            $('#creditsNbCandidat').val(0);
+            $('#creditsObservation').val('');
+        } else {
+            $.get('/SessionCredits/GetById/' + id, function (c) {
+                $('#creditsModalTitle').text('Modifier le crédit');
+                $('#creditsId').val(c.id);
+                $('#creditsIdEpreuve').val(c.idSessionEpreuve);
+                $('#creditsIdNiveau').val(c.idNiveau);
+                $('#creditsNbCandidat').val(c.nbCandidat);
+                $('#creditsObservation').val(c.observation);
+            });
+        }
+        $('#modalCredits').modal('show');
+    }
+
+    function saveCredits() {
+        var data = {
+            id: parseInt($('#creditsId').val()),
+            idSession: sessionId,
+            idSessionEpreuve: parseInt($('#creditsIdEpreuve').val()),
+            idNiveau: parseInt($('#creditsIdNiveau').val()),
+            idCentre: 0,
+            nbCandidat: parseInt($('#creditsNbCandidat').val()) || 0,
+            observation: $('#creditsObservation').val()
+        };
+        $.ajax({ url: '/SessionCredits/Save', type: 'POST', contentType: 'application/json', data: JSON.stringify(data),
+            success: function () { $('#modalCredits').modal('hide'); loadCredits(); },
+            error: function (xhr) { $('#creditsError').text(xhr.responseJSON ? xhr.responseJSON.error : 'Erreur').show(); }
+        });
+    }
+
     // ===== SUPPRESSION GÉNÉRIQUE =====
     function delItem(type, id, label) {
-        var urls = { seance: '/SessionSeance/Delete', filiere: '/SessionFiliere/Delete', niveau: '/SessionNiveau/Delete' };
-        var reloads = { seance: loadSeances, filiere: function(){ loadFilieres(); loadNiveaux(); }, niveau: loadNiveaux };
+        var urls = {
+            seance: '/SessionSeance/Delete', filiere: '/SessionFiliere/Delete',
+            niveau: '/SessionNiveau/Delete', jour: '/SessionJour/Delete',
+            centre: '/SessionCentre/Delete', niveaucentre: '/SessionNiveauCentre/Delete',
+            epreuve: '/SessionEpreuve/Delete', credits: '/SessionCredits/Delete'
+        };
+        var reloads = {
+            seance: loadSeances, filiere: function(){ loadFilieres(); loadNiveaux(); },
+            niveau: loadNiveaux, jour: loadJournees,
+            centre: function(){ loadCentres(); loadNiveauCentre(); }, niveaucentre: loadNiveauCentre,
+            epreuve: function(){ loadEpreuves(); loadCredits(); }, credits: loadCredits
+        };
         $('#delMsg').text('Supprimer "' + label + '" ?');
         $('#btnDel').off('click').on('click', function () {
-            $.post(urls[type] + '?id=' + id, function () {
-                $('#modalDel').modal('hide');
-                reloads[type]();
-            });
+            $.post(urls[type] + '?id=' + id, function () { $('#modalDel').modal('hide'); reloads[type](); });
         });
         $('#modalDel').modal('show');
     }
 
-    function editSession() {
-        window.location.href = '/Session?edit=' + sessionId;
-    }
+    function editSession() { window.location.href = '/Session?edit=' + sessionId; }
 </script>
 }

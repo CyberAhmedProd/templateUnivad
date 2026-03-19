@@ -18,12 +18,22 @@ builder.Services.AddScoped<SessionDAL>();
 builder.Services.AddScoped<SessionSeanceDAL>();
 builder.Services.AddScoped<SessionFiliereDAL>();
 builder.Services.AddScoped<SessionNiveauDAL>();
+builder.Services.AddScoped<SessionJourDAL>();
+builder.Services.AddScoped<SessionCentreDAL>();
+builder.Services.AddScoped<SessionNiveauCentreDAL>();
+builder.Services.AddScoped<SessionEpreuveDAL>();
+builder.Services.AddScoped<SessionCreditsDAL>();
 
 // BLL
 builder.Services.AddScoped<SessionBLL>();
 builder.Services.AddScoped<SessionSeanceBLL>();
 builder.Services.AddScoped<SessionFiliereBLL>();
 builder.Services.AddScoped<SessionNiveauBLL>();
+builder.Services.AddScoped<SessionJourBLL>();
+builder.Services.AddScoped<SessionCentreBLL>();
+builder.Services.AddScoped<SessionNiveauCentreBLL>();
+builder.Services.AddScoped<SessionEpreuveBLL>();
+builder.Services.AddScoped<SessionCreditsBLL>();
 
 var app = builder.Build();
 

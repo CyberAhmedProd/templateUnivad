@@ -82,6 +82,18 @@ CREATE TABLE IF NOT EXISTS SessionEpreuve (
     NbEnveloppesADeposer INTEGER DEFAULT 0,
     TotalNbEnveloppesDeposees INTEGER DEFAULT 0
 );
+CREATE TABLE IF NOT EXISTS SessionCredits (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    IdSession INTEGER NOT NULL,
+    IdSessionEpreuve INTEGER NOT NULL,
+    IdCentre INTEGER NOT NULL,
+    IdNiveau INTEGER NOT NULL,
+    NbCandidat INTEGER NOT NULL,
+    Observation TEXT,
+    FOREIGN KEY (IdSession) REFERENCES Session(Id),
+    FOREIGN KEY (IdSessionEpreuve) REFERENCES SessionEpreuve(Id),
+    FOREIGN KEY (IdNiveau) REFERENCES SessionNiveau(Id)
+);
 CREATE TABLE IF NOT EXISTS SessionCentre (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     IdSession INTEGER NOT NULL,
@@ -91,6 +103,15 @@ CREATE TABLE IF NOT EXISTS SessionCentre (
     Responsable TEXT NOT NULL,
     Localisation TEXT NOT NULL,
     FOREIGN KEY (IdSession) REFERENCES Session(Id)
+);
+CREATE TABLE IF NOT EXISTS SessionNiveauCentre (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    IdSession INTEGER NOT NULL,
+    IdSessionNiveau INTEGER NOT NULL,
+    IdSessionCentre INTEGER NOT NULL,
+    FOREIGN KEY (IdSession) REFERENCES Session(Id),
+    FOREIGN KEY (IdSessionNiveau) REFERENCES SessionNiveau(Id),
+    FOREIGN KEY (IdSessionCentre) REFERENCES SessionCentre(Id)
 );";
 
             using var cmd = conn.CreateCommand();

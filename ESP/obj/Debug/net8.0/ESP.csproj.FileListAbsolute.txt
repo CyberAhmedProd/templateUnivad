@@ -60,3 +60,4 @@
 /home/wall_e/Desktop/Job/templateUnivad/ESP/obj/Debug/net8.0/ESP.pdb
 /home/wall_e/Desktop/Job/templateUnivad/ESP/obj/Debug/net8.0/ESP.genruntimeconfig.cache
 /home/wall_e/Desktop/Job/templateUnivad/ESP/obj/Debug/net8.0/ref/ESP.dll
+/home/wall_e/Desktop/Job/templateUnivad/ESP/obj/Debug/net8.0/ESP.sourcelink.json
